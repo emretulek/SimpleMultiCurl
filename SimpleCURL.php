@@ -34,8 +34,8 @@ class SimpleCURL
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_ENCODING       => '',
-            CURLOPT_MAXREDIRS      => 3,
-            CURLOPT_CONNECTTIMEOUT => 20
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_CONNECTTIMEOUT => 10
         ]);
     }
 
@@ -227,18 +227,15 @@ class SimpleCURL
      */
     public function post($url, array $parameters = [], bool $multipart = false): self
     {
-        $postData = $parameters;
-
         if ($multipart) {
-
             $this->setHeader([
                 'Content-Type' => 'multipart/form-data'
             ]);
         }else{
-            $postData = http_build_query($parameters);
+            $parameters = http_build_query($parameters);
         }
 
-        $this->request($url, 'POST', $postData);
+        $this->request($url, 'POST', $parameters);
 
         return $this;
     }
@@ -258,7 +255,7 @@ class SimpleCURL
      */
     public function request(string $url, string $method, $data = null): self
     {
-        $this->method = $method;
+        $this->method = strtoupper($method);
         $this->url = $url;
         $this->postData = $data;
 
@@ -431,7 +428,7 @@ class SimpleCURL
      *
      * @return $this
      */
-    public function followLocation(bool $value = true): self
+    public function followLocation(bool $value): self
     {
         $this->setOption(CURLOPT_FOLLOWLOCATION, $value);
 
@@ -649,7 +646,7 @@ class SimpleCURL
         }
 
         foreach ($cookies as $key => $val) {
-            $cookie .= $key . '=' . urlencode($val) . '; ';
+            $cookie .= $key . '=' . $val . '; ';
         }
 
         $this->setHeader([
