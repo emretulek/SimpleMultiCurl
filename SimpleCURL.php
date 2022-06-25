@@ -127,7 +127,12 @@ class SimpleCURL
         if ($this->postData) {
 
             if ($this->files) {
+                $this->multpart = true;
                 $this->postData += $this->files;
+            }
+
+            if($this->multpart === false){
+                $this->postData = http_build_query($this->postData);
             }
 
             $this->setOptions([
@@ -227,12 +232,10 @@ class SimpleCURL
      */
     public function post($url, array $parameters = [], bool $multipart = false): self
     {
-        if ($multipart) {
+        if ($this->multpart = $multipart) {
             $this->setHeader([
                 'Content-Type' => 'multipart/form-data'
             ]);
-        }else{
-            $parameters = http_build_query($parameters);
         }
 
         $this->request($url, 'POST', $parameters);
