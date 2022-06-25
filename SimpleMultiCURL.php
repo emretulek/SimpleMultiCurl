@@ -97,5 +97,16 @@ class SimpleMultiCURL
 
         return $this->simpleCURLS;
     }
+    
+    
+    /**
+     * @return void
+     */
+    public function flush()
+    {
+        $this->simpleCURLS = [];
+        $this->curlChs     = [];
+        $this->curlsData   = [];
+    }
 }
 
