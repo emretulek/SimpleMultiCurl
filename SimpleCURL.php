@@ -17,6 +17,7 @@ class SimpleCURL
     private array $avilableMethods = ['GET', 'POST', 'PUT', 'PATCH', 'OPTIONS', 'HEAD', 'DELETE'];
     private $data;
     private bool $isPrepared = false;
+    private bool $multipart = false;
 
     /**
      * Sınıf kurucusu
@@ -127,11 +128,11 @@ class SimpleCURL
         if ($this->postData) {
 
             if ($this->files) {
-                $this->multpart = true;
+                $this->multipart = true;
                 $this->postData += $this->files;
             }
 
-            if($this->multpart === false){
+            if($this->multipart === false){
                 $this->postData = http_build_query($this->postData);
             }
 
@@ -232,7 +233,7 @@ class SimpleCURL
      */
     public function post($url, array $parameters = [], bool $multipart = false): self
     {
-        if ($this->multpart = $multipart) {
+        if ($this->multipart = $multipart) {
             $this->setHeader([
                 'Content-Type' => 'multipart/form-data'
             ]);
