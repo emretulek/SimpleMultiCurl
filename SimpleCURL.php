@@ -132,7 +132,7 @@ class SimpleCURL
                 $this->postData += $this->files;
             }
 
-            if($this->multipart === false){
+            if($this->multipart === false && (is_array($this->postData) || is_object($this->postData))){
                 $this->postData = http_build_query($this->postData);
             }
 
