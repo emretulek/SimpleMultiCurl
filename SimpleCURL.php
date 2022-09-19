@@ -132,7 +132,7 @@ class SimpleCURL
                 $this->postData += $this->files;
             }
 
-            if($this->multipart === false){
+            if($this->multipart === false && (is_array($this->postData) || is_object($this->postData))){
                 $this->postData = http_build_query($this->postData);
             }
 
@@ -190,7 +190,6 @@ class SimpleCURL
      * Get methoduna eklenecek parametreler [key => value]
      *
      * @return $this
-     * @throws Exception
      */
     public function get($url, array $parameters = []): self
     {
@@ -255,7 +254,6 @@ class SimpleCURL
      * Bu method ile gönderilen data işlenmeden aktarılacaktır
      *
      * @return $this
-     * @throws Exception
      */
     public function request(string $url, string $method, $data = null): self
     {
@@ -670,15 +668,17 @@ class SimpleCURL
      * @param string $content
      * @param array $info
      * @param $data
+     * @param string $error
      * @return void
      */
-    public function multCurlResponsCreater(string $response, string $header, string $content, array $info, $data)
+    public function multCurlResponsCreater(string $response, string $header, string $content, array $info, $data, string $error)
     {
         $this->response        = $response;
         $this->responseHeaders = $header;
         $this->responseContent = $content;
         $this->info            = $info;
         $this->data            = $data;
+        $this->error           = $error;
     }
 
 

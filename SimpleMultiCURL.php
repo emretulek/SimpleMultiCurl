@@ -12,11 +12,14 @@ class SimpleMultiCURL
 
     private int $batchThread;
     private $mch;
+    private $exception = true;
+    private $errors;
 
-    public function __construct($batchThread = 50)
+    public function __construct($batchThread = 50, $exception = true)
     {
         $this->batchThread = $batchThread;
         $this->mch = curl_multi_init();
+        $this->exception = $exception;
     }
 
 
@@ -66,7 +69,15 @@ class SimpleMultiCURL
         /* Curl error handling */
         while ($result = curl_multi_info_read($this->mch)) {
             if ($errno = $result['result']) {
-                throw new Exception(curl_strerror($errno));
+                if($this->exception) {
+                    throw new Exception(curl_strerror($errno));
+                }else{
+                    foreach ($this->simpleCURLS as $key => $simpleCURL){
+                        if($simpleCURL->getCurlResource() === $result['handle']){
+                            $this->errors[$key] = curl_strerror($errno);
+                        }
+                    }
+                }
             }
         }
 
@@ -82,7 +93,8 @@ class SimpleMultiCURL
                 substr($response, 0, $info['header_size']),
                 substr($response, $info['header_size']),
                 $info,
-                $this->curlsData[$key]
+                $this->curlsData[$key],
+                $this->errors[$key] ?? ''
             );
 
             curl_multi_remove_handle($this->mch, $ch);
